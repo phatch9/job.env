@@ -89,8 +89,16 @@ export default function DashboardPage() {
           <div className="empty-icon">🚀</div>
           <h2>Get Started</h2>
           <p className="text-secondary">
-            Start tracking your job applications by adding your first application
+            Start tracking your job applications by adding your first company and application
           </p>
+          <div className="quick-actions">
+            <a href="/companies" className="btn btn-primary">
+              Add Company
+            </a>
+            <a href="/applications" className="btn btn-secondary">
+              Add Application
+            </a>
+          </div>
         </div>
       )}
 
@@ -156,8 +164,15 @@ export default function DashboardPage() {
           margin-bottom: var(--spacing-lg);
         }
 
-        .empty-state h2 {
-          margin-bottom: var(--spacing-md);
+        .empty-state .btn {
+          margin-top: var(--spacing-lg);
+        }
+
+        .quick-actions {
+          display: flex;
+          gap: var(--spacing-md);
+          margin-top: var(--spacing-lg);
+          justify-content: center;
         }
 
         .loading-state {
