@@ -1,4 +1,5 @@
 import { useApplications } from '@/hooks/useApplications';
+import UpcomingReminders from '@/components/dashboard/UpcomingReminders';
 
 export default function DashboardPage() {
   const { applications, loading } = useApplications();
@@ -82,6 +83,10 @@ export default function DashboardPage() {
             <p className="stat-value">{stats.rejected}</p>
           </div>
         </div>
+      </div>
+
+      <div className="mb-8">
+        <UpcomingReminders />
       </div>
 
       {applications.length === 0 && (
