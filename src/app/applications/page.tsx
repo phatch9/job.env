@@ -4,199 +4,225 @@ import { Application, ApplicationStatus } from '@/lib/types';
 import { STATUS_LABELS, STATUS_COLORS, STATUS_ICONS } from '@/lib/constants';
 import { format } from 'date-fns';
 import ApplicationForm from '@/components/ApplicationForm';
+import ApplicationDetailModal from '@/components/applications/ApplicationDetailModal';
 
 export default function ApplicationsPage() {
-    const { applications, deleteApplication, loading } = useApplications();
-    const [isFormOpen, setIsFormOpen] = useState(false);
-    const [editingApplication, setEditingApplication] = useState<Application | undefined>();
-    const [filterStatus, setFilterStatus] = useState<ApplicationStatus | 'all'>('all');
-    const [searchQuery, setSearchQuery] = useState('');
+  const { applications, deleteApplication, loading } = useApplications();
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingApplication, setEditingApplication] = useState<Application | undefined>();
+  const [viewingApplication, setViewingApplication] = useState<Application | undefined>();
+  const [filterStatus, setFilterStatus] = useState<ApplicationStatus | 'all'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
-    const handleEdit = (application: Application) => {
-        setEditingApplication(application);
-        setIsFormOpen(true);
-    };
+  const handleView = (application: Application) => {
+    setViewingApplication(application);
+  };
 
-    const handleDelete = async (id: string) => {
-        if (confirm('Are you sure you want to delete this application?')) {
-            try {
-                await deleteApplication(id);
-            } catch (error) {
-                console.error('Failed to delete application:', error);
-                alert('Failed to delete application');
-            }
-        }
-    };
+  const handleEdit = (application: Application) => {
+    setEditingApplication(application);
+    setIsFormOpen(true);
+  };
 
-    const handleCloseForm = () => {
-        setIsFormOpen(false);
-        setEditingApplication(undefined);
-    };
-
-    // Filter and search applications
-    const filteredApplications = applications.filter((app) => {
-        const matchesStatus = filterStatus === 'all' || app.status === filterStatus;
-        const matchesSearch =
-            searchQuery === '' ||
-            app.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            app.company?.name.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesStatus && matchesSearch;
-    });
-
-    if (loading) {
-        return (
-            <div className="page-container">
-                <div className="loading-state">
-                    <div className="spinner" />
-                    <p className="text-secondary">Loading applications...</p>
-                </div>
-            </div>
-        );
+  const handleDelete = async (id: string) => {
+    if (confirm('Are you sure you want to delete this application?')) {
+      try {
+        await deleteApplication(id);
+      } catch (error) {
+        console.error('Failed to delete application:', error);
+        alert('Failed to delete application');
+      }
     }
+  };
 
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+    setEditingApplication(undefined);
+  };
+
+  const handleCloseDetail = () => {
+    setViewingApplication(undefined);
+  };
+
+  // Filter and search applications
+  const filteredApplications = applications.filter((app) => {
+    const matchesStatus = filterStatus === 'all' || app.status === filterStatus;
+    const matchesSearch =
+      searchQuery === '' ||
+      app.position.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      app.company?.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
+
+  if (loading) {
     return (
-        <div className="page-container">
-            <div className="page-header">
-                <div>
-                    <h1>Applications</h1>
-                    <p className="text-secondary">
-                        View and manage all your job applications
-                    </p>
-                </div>
-                <button className="btn btn-primary" onClick={() => setIsFormOpen(true)}>
-                    <span>➕</span>
-                    <span>Add Application</span>
-                </button>
+      <div className="page-container">
+        <div className="loading-state">
+          <div className="spinner" />
+          <p className="text-secondary">Loading applications...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="page-container">
+      <div className="page-header">
+        <div>
+          <h1>Applications</h1>
+          <p className="text-secondary">
+            View and manage all your job applications
+          </p>
+        </div>
+        <button className="btn btn-primary" onClick={() => setIsFormOpen(true)}>
+          <span>➕</span>
+          <span>Add Application</span>
+        </button>
+      </div>
+
+      {applications.length === 0 ? (
+        <div className="empty-state glass-card">
+          <div className="empty-icon">📝</div>
+          <h2>No Applications Yet</h2>
+          <p className="text-secondary">
+            Start tracking your job applications by adding your first one
+          </p>
+          <button className="btn btn-primary" onClick={() => setIsFormOpen(true)}>
+            Add Your First Application
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className="filters-bar glass-card">
+            <div className="search-box">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Search by position or company..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
+            <div className="status-filters">
+              <button
+                className={`filter-btn ${filterStatus === 'all' ? 'active' : ''}`}
+                onClick={() => setFilterStatus('all')}
+              >
+                All ({applications.length})
+              </button>
+              {Object.entries(STATUS_LABELS).map(([status, label]) => {
+                const count = applications.filter((app) => app.status === status).length;
+                return (
+                  <button
+                    key={status}
+                    className={`filter-btn ${filterStatus === status ? 'active' : ''}`}
+                    onClick={() => setFilterStatus(status as ApplicationStatus)}
+                  >
+                    {STATUS_ICONS[status as ApplicationStatus]} {label} ({count})
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-            {applications.length === 0 ? (
-                <div className="empty-state glass-card">
-                    <div className="empty-icon">📝</div>
-                    <h2>No Applications Yet</h2>
-                    <p className="text-secondary">
-                        Start tracking your job applications by adding your first one
-                    </p>
-                    <button className="btn btn-primary" onClick={() => setIsFormOpen(true)}>
-                        Add Your First Application
-                    </button>
-                </div>
-            ) : (
-                <>
-                    <div className="filters-bar glass-card">
-                        <div className="search-box">
-                            <span className="search-icon">🔍</span>
-                            <input
-                                type="text"
-                                className="search-input"
-                                placeholder="Search by position or company..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-                        <div className="status-filters">
-                            <button
-                                className={`filter-btn ${filterStatus === 'all' ? 'active' : ''}`}
-                                onClick={() => setFilterStatus('all')}
-                            >
-                                All ({applications.length})
-                            </button>
-                            {Object.entries(STATUS_LABELS).map(([status, label]) => {
-                                const count = applications.filter((app) => app.status === status).length;
-                                return (
-                                    <button
-                                        key={status}
-                                        className={`filter-btn ${filterStatus === status ? 'active' : ''}`}
-                                        onClick={() => setFilterStatus(status as ApplicationStatus)}
-                                    >
-                                        {STATUS_ICONS[status as ApplicationStatus]} {label} ({count})
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    </div>
+          {filteredApplications.length === 0 ? (
+            <div className="no-results glass-card">
+              <p className="text-secondary">No applications match your filters</p>
+            </div>
+          ) : (
+            <div className="applications-table glass-card">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Position</th>
+                    <th>Company</th>
+                    <th>Status</th>
+                    <th>Location</th>
+                    <th>Salary</th>
+                    <th>Applied</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredApplications.map((app) => (
+                    <tr key={app.id}>
+                      <td className="position-cell">
+                        <strong>{app.position}</strong>
+                        {app.job_url && (
+                          <a
+                            href={app.job_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="job-link"
+                          >
+                            🔗
+                          </a>
+                        )}
+                      </td>
+                      <td>{app.company?.name || 'Unknown'}</td>
+                      <td>
+                        <span
+                          className="status-badge"
+                          style={{ backgroundColor: STATUS_COLORS[app.status] }}
+                        >
+                          {STATUS_ICONS[app.status]} {STATUS_LABELS[app.status]}
+                        </span>
+                      </td>
+                      <td>{app.location || '-'}</td>
+                      <td>{app.salary ? `$${app.salary.toLocaleString()}` : '-'}</td>
+                      <td>
+                        {app.applied_date
+                          ? format(new Date(app.applied_date), 'MMM dd, yyyy')
+                          : '-'}
+                      </td>
+                      <td className="actions-cell">
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => handleView(app)}
+                          title="View"
+                        >
+                          👁️
+                        </button>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => handleEdit(app)}
+                          title="Edit"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => handleDelete(app.id)}
+                          title="Delete"
+                        >
+                          🗑️
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </>
+      )}
 
-                    {filteredApplications.length === 0 ? (
-                        <div className="no-results glass-card">
-                            <p className="text-secondary">No applications match your filters</p>
-                        </div>
-                    ) : (
-                        <div className="applications-table glass-card">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Position</th>
-                                        <th>Company</th>
-                                        <th>Status</th>
-                                        <th>Location</th>
-                                        <th>Salary</th>
-                                        <th>Applied</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {filteredApplications.map((app) => (
-                                        <tr key={app.id}>
-                                            <td className="position-cell">
-                                                <strong>{app.position}</strong>
-                                                {app.job_url && (
-                                                    <a
-                                                        href={app.job_url}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="job-link"
-                                                    >
-                                                        🔗
-                                                    </a>
-                                                )}
-                                            </td>
-                                            <td>{app.company?.name || 'Unknown'}</td>
-                                            <td>
-                                                <span
-                                                    className="status-badge"
-                                                    style={{ backgroundColor: STATUS_COLORS[app.status] }}
-                                                >
-                                                    {STATUS_ICONS[app.status]} {STATUS_LABELS[app.status]}
-                                                </span>
-                                            </td>
-                                            <td>{app.location || '-'}</td>
-                                            <td>{app.salary ? `$${app.salary.toLocaleString()}` : '-'}</td>
-                                            <td>
-                                                {app.applied_date
-                                                    ? format(new Date(app.applied_date), 'MMM dd, yyyy')
-                                                    : '-'}
-                                            </td>
-                                            <td className="actions-cell">
-                                                <button
-                                                    className="btn btn-ghost btn-sm"
-                                                    onClick={() => handleEdit(app)}
-                                                    title="Edit"
-                                                >
-                                                    ✏️
-                                                </button>
-                                                <button
-                                                    className="btn btn-ghost btn-sm"
-                                                    onClick={() => handleDelete(app.id)}
-                                                    title="Delete"
-                                                >
-                                                    🗑️
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
-                </>
-            )}
+      {viewingApplication && (
+        <ApplicationDetailModal
+          isOpen={!!viewingApplication}
+          onClose={handleCloseDetail}
+          application={viewingApplication}
+          onEdit={() => handleEdit(viewingApplication)}
+        />
+      )}
 
-            <ApplicationForm
-                isOpen={isFormOpen}
-                onClose={handleCloseForm}
-                application={editingApplication}
-            />
+      <ApplicationForm
+        isOpen={isFormOpen}
+        onClose={handleCloseForm}
+        application={editingApplication}
+      />
 
-            <style>{`
+      <style>{`
         .page-container {
           min-height: 100vh;
           padding: var(--spacing-xl);
@@ -429,6 +455,6 @@ export default function ApplicationsPage() {
           }
         }
       `}</style>
-        </div>
-    );
+    </div>
+  );
 }
