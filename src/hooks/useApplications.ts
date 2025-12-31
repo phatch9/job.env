@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Application, ApplicationFormData, ApplicationStatus } from '@/lib/types';
 import { useAuth } from './useAuth.tsx';
+import { applicationsApi } from '@/lib/api/applications';
 
 export function useApplications() {
     const { user } = useAuth();
@@ -19,17 +20,8 @@ export function useApplications() {
 
         try {
             setLoading(true);
-            const { data, error } = await supabase
-                .from('applications')
-                .select(`
-          *,
-          company:companies(*)
-        `)
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-            setApplications(data || []);
+            const data = await applicationsApi.getAll();
+            setApplications(data);
             setError(null);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch applications');
@@ -67,21 +59,7 @@ export function useApplications() {
     const createApplication = async (data: ApplicationFormData) => {
         if (!user) throw new Error('User not authenticated');
 
-        const { data: newApp, error } = await supabase
-            .from('applications')
-            .insert([
-                {
-                    ...data,
-                    user_id: user.id,
-                },
-            ])
-            .select(`
-        *,
-        company:companies(*)
-      `)
-            .single();
-
-        if (error) throw error;
+        const newApp = await applicationsApi.create(data, user.id);
 
         // Optimistic update
         setApplications((prev) => [newApp, ...prev]);
@@ -90,17 +68,7 @@ export function useApplications() {
 
     // Update application
     const updateApplication = async (id: string, data: Partial<ApplicationFormData>) => {
-        const { data: updatedApp, error } = await supabase
-            .from('applications')
-            .update(data)
-            .eq('id', id)
-            .select(`
-        *,
-        company:companies(*)
-      `)
-            .single();
-
-        if (error) throw error;
+        const updatedApp = await applicationsApi.update(id, data);
 
         // Optimistic update
         setApplications((prev) =>
@@ -135,12 +103,7 @@ export function useApplications() {
 
     // Delete application
     const deleteApplication = async (id: string) => {
-        const { error } = await supabase
-            .from('applications')
-            .delete()
-            .eq('id', id);
-
-        if (error) throw error;
+        await applicationsApi.delete(id);
 
         // Optimistic update
         setApplications((prev) => prev.filter((app) => app.id !== id));
