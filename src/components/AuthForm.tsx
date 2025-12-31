@@ -1,9 +1,13 @@
 import { useState, FormEvent } from 'react';
 import { useAuth } from '@/hooks/useAuth.tsx';
 
-export default function AuthForm() {
+interface AuthFormProps {
+    defaultIsSignUp?: boolean;
+}
+
+export default function AuthForm({ defaultIsSignUp = false }: AuthFormProps) {
     const { signIn, signUp } = useAuth();
-    const [isSignUp, setIsSignUp] = useState(false);
+    const [isSignUp, setIsSignUp] = useState(defaultIsSignUp);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
