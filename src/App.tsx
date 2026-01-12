@@ -7,6 +7,7 @@ import KanbanPage from './app/kanban/page';
 import ApplicationsPage from './app/applications/page';
 import CompaniesPage from './app/companies/page';
 import LandingPage from './app/landing/page';
+import AuthCallbackPage from './app/auth/callback/page';
 
 function ProtectedRoute() {
     const { user, loading } = useAuth();
@@ -56,6 +57,7 @@ function AppRoutes() {
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/auth/login" element={<AuthForm defaultIsSignUp={false} />} />
                 <Route path="/auth/register" element={<AuthForm defaultIsSignUp={true} />} />
+                <Route path="/auth/callback" element={<AuthCallbackPage />} />
             </Route>
 
             {/* Protected Routes */}
