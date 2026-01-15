@@ -38,6 +38,29 @@ export interface Note {
     updated_at: string;
 }
 
+export interface Reminder {
+    id: string;
+    user_id: string;
+    application_id?: string;
+    application?: Application; // Joined fields
+    title: string;
+    due_date: string;
+    completed: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Document {
+    id: string;
+    user_id: string;
+    application_id?: string;
+    name: string;
+    file_path: string;
+    file_type: string;
+    size: number;
+    created_at: string;
+}
+
 // Form data types
 export interface CompanyFormData {
     name: string;
@@ -62,6 +85,13 @@ export interface ApplicationFormData {
 export interface NoteFormData {
     application_id: string;
     content: string;
+}
+
+export interface ReminderFormData {
+    application_id?: string;
+    title: string;
+    due_date: string;
+    completed?: boolean;
 }
 
 // UI types
