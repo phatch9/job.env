@@ -28,7 +28,7 @@ describe('applicationsApi', () => {
             order: vi.fn().mockResolvedValue({ data: mockData, error: null }),
         });
 
-        (supabase.from as any).mockReturnValue({
+        (supabase.from as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
             select: selectMock,
         });
 
@@ -53,7 +53,7 @@ describe('applicationsApi', () => {
             })
         });
 
-        (supabase.from as any).mockReturnValue({
+        (supabase.from as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
             insert: insertMock,
         });
 
@@ -75,7 +75,7 @@ describe('applicationsApi', () => {
             })
         });
 
-        (supabase.from as any).mockReturnValue({
+        (supabase.from as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
             update: updateMock,
         });
 
@@ -90,7 +90,7 @@ describe('applicationsApi', () => {
             eq: vi.fn().mockResolvedValue({ error: null })
         });
 
-        (supabase.from as any).mockReturnValue({
+        (supabase.from as unknown as ReturnType<typeof vi.fn>).mockReturnValue({
             delete: deleteMock,
         });
 

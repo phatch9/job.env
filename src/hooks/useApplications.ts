@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Application, ApplicationFormData, ApplicationStatus } from '@/lib/types';
 import { useAuth } from './useAuth.tsx';
@@ -11,7 +11,7 @@ export function useApplications() {
     const [error, setError] = useState<string | null>(null);
 
     // Fetch applications
-    const fetchApplications = async () => {
+    const fetchApplications = useCallback(async () => {
         if (!user) {
             setApplications([]);
             setLoading(false);
@@ -28,7 +28,7 @@ export function useApplications() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user]);
 
     useEffect(() => {
         fetchApplications();
@@ -53,7 +53,7 @@ export function useApplications() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [user]);
+    }, [user, fetchApplications]);
 
     // Create application
     const createApplication = async (data: ApplicationFormData) => {
@@ -79,7 +79,7 @@ export function useApplications() {
 
     // Update application status
     const updateStatus = async (id: string, status: ApplicationStatus) => {
-        const updateData: any = { status };
+        const updateData: Partial<ApplicationFormData> & { status: ApplicationStatus } = { status };
 
         // Set date fields based on status
         const now = new Date().toISOString();

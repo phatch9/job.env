@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { remindersApi } from '@/lib/api/reminders';
 import { Reminder } from '@/lib/types';
@@ -11,7 +11,7 @@ export default function UpcomingReminders() {
     const [reminders, setReminders] = useState<Reminder[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchReminders = async () => {
+    const fetchReminders = useCallback(async () => {
         if (!user) return;
         try {
             const data = await remindersApi.getUpcoming();
@@ -21,11 +21,11 @@ export default function UpcomingReminders() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user]);
 
     useEffect(() => {
         fetchReminders();
-    }, [user]);
+    }, [user, fetchReminders]);
 
     const handleComplete = async (id: string) => {
         try {
