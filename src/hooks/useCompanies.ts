@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Company, CompanyFormData } from '@/lib/types';
 import { useAuth } from './useAuth.tsx';
@@ -7,6 +7,25 @@ export function useCompanies() {
     const { user } = useAuth();
     const [companies, setCompanies] = useState<Company[]>([]);
     const [loading, setLoading] = useState(true);
+
+    const fetchCompanies = useCallback(async () => {
+        if (!user) return;
+
+        try {
+            const { data, error } = await supabase
+                .from('companies')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('name');
+
+            if (error) throw error;
+            setCompanies(data || []);
+        } catch (error) {
+            console.error('Error fetching companies:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, [user]);
 
     useEffect(() => {
         if (!user) {
@@ -37,26 +56,9 @@ export function useCompanies() {
         return () => {
             subscription.unsubscribe();
         };
-    }, [user]);
+    }, [user, fetchCompanies]);
 
-    const fetchCompanies = async () => {
-        if (!user) return;
 
-        try {
-            const { data, error } = await supabase
-                .from('companies')
-                .select('*')
-                .eq('user_id', user.id)
-                .order('name');
-
-            if (error) throw error;
-            setCompanies(data || []);
-        } catch (error) {
-            console.error('Error fetching companies:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const createCompany = async (formData: CompanyFormData) => {
         if (!user) throw new Error('User not authenticated');
