@@ -1,4 +1,8 @@
+import type { ApplicationPipelineFields, JobEvaluation, FitGrade } from './evaluation';
+
 export type ApplicationStatus = 'wishlist' | 'applied' | 'interview' | 'offer' | 'rejected';
+
+export type { JobEvaluation, FitGrade, ApplicationPipelineFields };
 
 export interface Company {
     id: string;
@@ -11,7 +15,7 @@ export interface Company {
     updated_at: string;
 }
 
-export interface Application {
+export interface Application extends ApplicationPipelineFields {
     id: string;
     user_id: string;
     company_id: string;
@@ -81,6 +85,9 @@ export interface ApplicationFormData {
     offer_date?: string;
     rejected_date?: string;
 }
+
+/** Merges Kanban form fields with AI pipeline columns for Supabase updates. */
+export type ApplicationUpdatePayload = Partial<ApplicationFormData & ApplicationPipelineFields>;
 
 export interface NoteFormData {
     application_id: string;
