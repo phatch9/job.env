@@ -1,6 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Application, ApplicationFormData, ApplicationStatus } from '@/lib/types';
+import {
+    Application,
+    ApplicationFormData,
+    ApplicationStatus,
+    ApplicationUpdatePayload,
+} from '@/lib/types';
 import { useAuth } from './useAuth.tsx';
 import { applicationsApi } from '@/lib/api/applications';
 
@@ -67,7 +72,7 @@ export function useApplications() {
     };
 
     // Update application
-    const updateApplication = async (id: string, data: Partial<ApplicationFormData>) => {
+    const updateApplication = async (id: string, data: ApplicationUpdatePayload) => {
         const updatedApp = await applicationsApi.update(id, data);
 
         // Optimistic update
