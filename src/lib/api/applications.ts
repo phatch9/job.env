@@ -1,5 +1,5 @@
 import { supabase } from '../supabase';
-import { Application, ApplicationFormData } from '../types';
+import { Application, ApplicationFormData, ApplicationUpdatePayload } from '../types';
 
 export const applicationsApi = {
     async getAll() {
@@ -36,7 +36,7 @@ export const applicationsApi = {
         return data as Application;
     },
 
-    async update(id: string, updates: Partial<ApplicationFormData>) {
+    async update(id: string, updates: ApplicationUpdatePayload) {
         const { data, error } = await supabase
             .from('applications')
             .update(updates)
