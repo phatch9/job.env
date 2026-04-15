@@ -1,6 +1,7 @@
 import { Application } from '@/lib/types';
 import Modal from '@/components/Modal';
 import ApplicationTimeline from './ApplicationTimeline';
+import EvaluationRadarChart from './EvaluationRadarChart';
 import { STATUS_LABELS, STATUS_COLORS, STATUS_ICONS } from '@/lib/constants';
 import { scoreToLetterGrade } from '@/lib/evaluation';
 import { format } from 'date-fns';
@@ -61,6 +62,12 @@ export default function ApplicationDetailModal({ isOpen, onClose, application, o
                                 </div>
                                 {application.evaluation && (
                                     <div className="evaluation-details">
+                                        {/* Radar Chart */}
+                                        <div className="radar-chart-section">
+                                            <h4>10-Dimension Analysis</h4>
+                                            <EvaluationRadarChart evaluation={application.evaluation} size={280} />
+                                        </div>
+
                                         <p className="evaluation-summary">{application.evaluation.summary}</p>
                                         {application.evaluation.strengths && application.evaluation.strengths.length > 0 && (
                                             <div className="evaluation-list">
@@ -298,6 +305,26 @@ export default function ApplicationDetailModal({ isOpen, onClose, application, o
                     color: var(--text-secondary);
                     line-height: 1.6;
                     margin-bottom: var(--spacing-md);
+                    margin-top: var(--spacing-md);
+                }
+
+                .radar-chart-section {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    padding: var(--spacing-md);
+                    background-color: var(--glass-bg);
+                    border-radius: var(--radius-lg);
+                    border: 1px solid var(--glass-border);
+                    margin-bottom: var(--spacing-md);
+                }
+
+                .radar-chart-section h4 {
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    color: var(--text-primary);
+                    margin-bottom: var(--spacing-md);
+                    margin-top: 0;
                 }
 
                 .evaluation-list {
