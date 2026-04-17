@@ -36,7 +36,7 @@ export default function UpcomingReminders() {
         }
     };
 
-    if (loading) return <div className="glass-card p-6">Loading...</div>;
+    if (loading) return <div className="glass-card" style={{ padding: 'var(--spacing-lg)' }}>Loading...</div>;
 
     return (
         <div className="glass-card reminder-widget">
@@ -65,7 +65,7 @@ export default function UpcomingReminders() {
                                 <p className="reminder-title">{reminder.title}</p>
                                 <div className="reminder-meta">
                                     <span className="reminder-date">
-                                        <CalendarIcon className="w-3 h-3 inline mr-1" />
+                                    <CalendarIcon style={{ display: 'inline', width: '0.75rem', height: '0.75rem', marginRight: '0.25rem' }} />
                                         {format(new Date(reminder.due_date), 'MMM d')}
                                     </span>
                                     {reminder.application && (
