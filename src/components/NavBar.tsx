@@ -64,7 +64,7 @@ export default function NavBar() {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <button className="btn btn-ghost btn-icon" aria-label="User menu">
-                                    <PersonIcon className="h-5 w-5" />
+                                    <PersonIcon style={{ width: '1.25rem', height: '1.25rem' }} />
                                 </button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
@@ -79,11 +79,11 @@ export default function NavBar() {
                         </DropdownMenu>
 
                         {/* Mobile Menu Trigger - Simplified for now */}
-                        <div className="visible-mobile ml-2">
+                        <div className="visible-mobile" style={{ marginLeft: 'var(--spacing-sm)' }}>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <button className="btn btn-ghost btn-icon">
-                                        <HamburgerMenuIcon className="h-5 w-5" />
+                                        <HamburgerMenuIcon style={{ width: '1.25rem', height: '1.25rem' }} />
                                     </button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
