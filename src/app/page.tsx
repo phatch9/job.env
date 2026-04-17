@@ -85,7 +85,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="mb-8">
+      <div style={{ marginBottom: 'var(--spacing-2xl)' }}>
         <UpcomingReminders />
       </div>
 
