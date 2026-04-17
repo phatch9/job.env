@@ -7,6 +7,7 @@ interface AuthContextType {
     session: Session | null;
     loading: boolean;
     signIn: (email: string, password?: string) => Promise<void>;
+    signInWithGoogle: () => Promise<void>;
     signUp: (email: string, password?: string) => Promise<void>;
     signOut: () => Promise<void>;
 }
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextType>({
     session: null,
     loading: true,
     signIn: async () => { },
+    signInWithGoogle: async () => { },
     signUp: async () => { },
     signOut: async () => { },
 });
