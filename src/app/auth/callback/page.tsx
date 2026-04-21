@@ -33,7 +33,7 @@ export default function AuthCallbackPage() {
         <div className="page-container flex-center">
             <div className="loading-state">
                 <div className="spinner" />
-                <p className="text-secondary mt-4">Completing sign in...</p>
+                <p className="text-secondary" style={{ marginTop: 'var(--spacing-md)' }}>Completing sign in...</p>
             </div>
             <style>{`
                 .flex-center {
