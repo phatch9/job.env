@@ -3,6 +3,15 @@ import UpcomingReminders from '@/components/dashboard/UpcomingReminders';
 
 export default function DashboardPage() {
   const { applications, loading } = useApplications();
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/applications?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
 
   const stats = {
     total: applications.length,
