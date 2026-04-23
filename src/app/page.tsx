@@ -1,5 +1,8 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useApplications } from '@/hooks/useApplications';
 import UpcomingReminders from '@/components/dashboard/UpcomingReminders';
+import { STATUS_COLORS, STATUS_LABELS } from '@/lib/constants';
 
 export default function DashboardPage() {
   const { applications, loading } = useApplications();
@@ -22,6 +25,10 @@ export default function DashboardPage() {
     rejected: applications.filter((app) => app.status === 'rejected').length,
   };
 
+  const recentApplications = [...applications]
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 3);
+
   if (loading) {
     return (
       <div className="page-container">
@@ -35,158 +42,303 @@ export default function DashboardPage() {
 
   return (
     <div className="page-container">
-      <div className="page-header">
-        <div>
-          <h1>Dashboard</h1>
-          <p className="text-secondary">
-            Track your job application progress
-          </p>
+      <div className="dashboard-layout">
+        {/* Main Content */}
+        <div className="main-col">
+          <div className="dashboard-header">
+            <div className="welcome-text">
+              <h1>Good evening</h1>
+              <p className="text-secondary">Here's what's happening with your job search today.</p>
+            </div>
+            
+            <form className="quick-search glass" onSubmit={handleSearch}>
+              <span className="search-icon">🔍</span>
+              <input 
+                type="text" 
+                placeholder="Quick search applications..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </form>
+          </div>
+
+          {/* Stats Overview */}
+          <div className="stats-strip">
+            <div className="stat-item glass-card">
+              <span className="stat-label">Total</span>
+              <span className="stat-value">{stats.total}</span>
+            </div>
+            <div className="stat-item glass-card">
+              <span className="stat-label">Interviews</span>
+              <span className="stat-value text-accent-secondary">{stats.interview}</span>
+            </div>
+            <div className="stat-item glass-card">
+              <span className="stat-label">Offers</span>
+              <span className="stat-value text-accent-success">{stats.offer}</span>
+            </div>
+          </div>
+
+          {/* Pipeline Funnel */}
+          <div className="section-row">
+            <div className="glass-card funnel-card">
+              <h3>Pipeline Funnel</h3>
+              <div className="funnel-container">
+                <div className="funnel-stage" style={{ width: '100%', opacity: 1 }}>
+                  <div className="stage-bar wishlist" style={{ width: `${(stats.wishlist / stats.total) * 100 || 0}%` }}></div>
+                  <span className="stage-label">Wishlist <b>{stats.wishlist}</b></span>
+                </div>
+                <div className="funnel-stage" style={{ width: '90%', opacity: 0.9 }}>
+                  <div className="stage-bar applied" style={{ width: `${(stats.applied / stats.total) * 100 || 0}%` }}></div>
+                  <span className="stage-label">Applied <b>{stats.applied}</b></span>
+                </div>
+                <div className="funnel-stage" style={{ width: '80%', opacity: 0.8 }}>
+                  <div className="stage-bar interview" style={{ width: `${(stats.interview / stats.total) * 100 || 0}%` }}></div>
+                  <span className="stage-label">Interview <b>{stats.interview}</b></span>
+                </div>
+                <div className="funnel-stage" style={{ width: '70%', opacity: 0.7 }}>
+                  <div className="stage-bar offer" style={{ width: `${(stats.offer / stats.total) * 100 || 0}%` }}></div>
+                  <span className="stage-label">Offer <b>{stats.offer}</b></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Recent Activity */}
+          <div className="section-row">
+            <div className="glass-card activity-card">
+              <div className="card-header-wide">
+                <h3>Recent Applications</h3>
+                <a href="/applications" className="text-sm link-hover">View all</a>
+              </div>
+              <div className="recent-list">
+                {recentApplications.length === 0 ? (
+                  <p className="text-secondary text-center py-lg">No applications yet.</p>
+                ) : (
+                  recentApplications.map(app => (
+                    <div key={app.id} className="recent-item">
+                      <div className="recent-info">
+                        <strong>{app.position}</strong>
+                        <span className="text-xs text-secondary">{app.company?.name}</span>
+                      </div>
+                      <div className="recent-status">
+                         <span className="badge" style={{ backgroundColor: STATUS_COLORS[app.status], color: 'white' }}>
+                           {STATUS_LABELS[app.status]}
+                         </span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="sidebar-col">
+          <UpcomingReminders />
+          
+          <div className="glass-card motivation-card">
+             <div className="quote-icon">"</div>
+             <p className="quote-text">The only way to do great work is to love what you do.</p>
+             <span className="quote-author">— Steve Jobs</span>
+          </div>
         </div>
       </div>
-
-      <div className="stats-grid">
-        <div className="stat-card glass-card">
-          <div className="stat-icon">📊</div>
-          <div className="stat-content">
-            <p className="stat-label">Total Applications</p>
-            <p className="stat-value">{stats.total}</p>
-          </div>
-        </div>
-
-        <div className="stat-card glass-card">
-          <div className="stat-icon">⭐</div>
-          <div className="stat-content">
-            <p className="stat-label">Wishlist</p>
-            <p className="stat-value">{stats.wishlist}</p>
-          </div>
-        </div>
-
-        <div className="stat-card glass-card">
-          <div className="stat-icon">📤</div>
-          <div className="stat-content">
-            <p className="stat-label">Applied</p>
-            <p className="stat-value">{stats.applied}</p>
-          </div>
-        </div>
-
-        <div className="stat-card glass-card">
-          <div className="stat-icon">💼</div>
-          <div className="stat-content">
-            <p className="stat-label">Interviews</p>
-            <p className="stat-value">{stats.interview}</p>
-          </div>
-        </div>
-
-        <div className="stat-card glass-card">
-          <div className="stat-icon">🎉</div>
-          <div className="stat-content">
-            <p className="stat-label">Offers</p>
-            <p className="stat-value">{stats.offer}</p>
-          </div>
-        </div>
-
-        <div className="stat-card glass-card">
-          <div className="stat-icon">❌</div>
-          <div className="stat-content">
-            <p className="stat-label">Rejected</p>
-            <p className="stat-value">{stats.rejected}</p>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ marginBottom: 'var(--spacing-2xl)' }}>
-        <UpcomingReminders />
-      </div>
-
-      {applications.length === 0 && (
-        <div className="empty-state glass-card">
-          <div className="empty-icon">🚀</div>
-          <h2>Get Started</h2>
-          <p className="text-secondary">
-            Start tracking your job applications by adding your first company and application
-          </p>
-          <div className="quick-actions">
-            <a href="/companies" className="btn btn-primary">
-              Add Company
-            </a>
-            <a href="/applications" className="btn btn-secondary">
-              Add Application
-            </a>
-          </div>
-        </div>
-      )}
 
       <style>{`
         .page-container {
-          min-height: 100vh;
           padding: var(--spacing-xl);
+          max-width: 1400px;
+          margin: 0 auto;
         }
 
-        .page-header {
-          margin-bottom: var(--spacing-xl);
-        }
-
-        .page-header h1 {
-          margin-bottom: var(--spacing-xs);
-        }
-
-        .stats-grid {
+        .dashboard-layout {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: var(--spacing-lg);
-          margin-bottom: var(--spacing-xl);
+          grid-template-columns: 1fr 350px;
+          gap: var(--spacing-xl);
         }
 
-        .stat-card {
+        .dashboard-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: var(--spacing-xl);
+          gap: var(--spacing-lg);
+        }
+
+        .quick-search {
           display: flex;
           align-items: center;
+          gap: var(--spacing-sm);
+          padding: var(--spacing-sm) var(--spacing-md);
+          border-radius: var(--radius-xl);
+          width: 100%;
+          max-width: 300px;
+        }
+
+        .quick-search input {
+          background: transparent;
+          border: none;
+          color: white;
+          width: 100%;
+          outline: none;
+          font-size: 0.9rem;
+        }
+
+        .stats-strip {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
           gap: var(--spacing-lg);
-          padding: var(--spacing-xl);
+          margin-bottom: var(--spacing-xl);
         }
 
-        .stat-icon {
-          font-size: 2.5rem;
-          opacity: 0.8;
-        }
-
-        .stat-content {
-          flex: 1;
+        .stat-item {
+          display: flex;
+          flex-direction: column;
+          padding: var(--spacing-lg);
+          text-align: center;
         }
 
         .stat-label {
-          font-size: 0.875rem;
+          font-size: 0.8rem;
           color: var(--text-secondary);
-          margin-bottom: var(--spacing-xs);
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          margin-bottom: 4px;
         }
 
         .stat-value {
-          font-size: 2rem;
-          font-weight: 700;
-          color: var(--text-primary);
-          margin: 0;
+          font-size: 2.5rem;
+          font-weight: 800;
         }
 
-        .empty-state {
-          text-align: center;
-          padding: var(--spacing-2xl);
-          max-width: 500px;
-          margin: var(--spacing-2xl) auto;
+        .text-accent-secondary { color: var(--accent-secondary); }
+        .text-accent-success { color: var(--accent-success); }
+
+        .section-row {
+          margin-bottom: var(--spacing-xl);
         }
 
-        .empty-icon {
-          font-size: 4rem;
+        .funnel-card, .activity-card {
+          padding: var(--spacing-xl);
+        }
+
+        .funnel-container {
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-md);
+          margin-top: var(--spacing-lg);
+          align-items: center;
+        }
+
+        .funnel-stage {
+          position: relative;
+          height: 45px;
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: var(--radius-md);
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          padding: 0 var(--spacing-md);
+          border: 1px solid var(--glass-border);
+        }
+
+        .stage-bar {
+          position: absolute;
+          left: 0;
+          top: 0;
+          bottom: 0;
+          opacity: 0.3;
+          transition: width 1s ease-out;
+        }
+
+        .stage-bar.wishlist { background: var(--text-tertiary); }
+        .stage-bar.applied { background: var(--accent-secondary); }
+        .stage-bar.interview { background: var(--accent-primary); }
+        .stage-bar.offer { background: var(--accent-success); }
+
+        .stage-label {
+          position: relative;
+          z-index: 1;
+          font-size: 0.9rem;
+          display: flex;
+          justify-content: space-between;
+          width: 100%;
+        }
+
+        .card-header-wide {
+          display: flex;
+          justify-content: space-between;
+          align-items: baseline;
           margin-bottom: var(--spacing-lg);
         }
 
-        .empty-state .btn {
-          margin-top: var(--spacing-lg);
+        .recent-list {
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-sm);
         }
 
-        .quick-actions {
+        .recent-item {
           display: flex;
-          gap: var(--spacing-md);
-          margin-top: var(--spacing-lg);
-          justify-content: center;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--spacing-md);
+          background: rgba(255,255,255,0.02);
+          border-radius: var(--radius-md);
+          transition: background 0.2s;
+        }
+
+        .recent-item:hover {
+          background: rgba(255,255,255,0.05);
+        }
+
+        .recent-info {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .link-hover:hover {
+          text-decoration: underline;
+          color: var(--accent-primary);
+        }
+
+        .sidebar-col {
+          display: flex;
+          flex-direction: column;
+          gap: var(--spacing-xl);
+        }
+
+        .motivation-card {
+          padding: var(--spacing-xl);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          background: linear-gradient(135deg, rgba(168, 85, 247, 0.05), rgba(59, 130, 246, 0.05));
+        }
+
+        .quote-icon {
+          font-size: 3rem;
+          font-family: serif;
+          color: var(--accent-primary);
+          line-height: 1;
+          margin-bottom: -1rem;
+          opacity: 0.5;
+        }
+
+        .quote-text {
+          font-style: italic;
+          font-size: 1.1rem;
+          margin-bottom: var(--spacing-md);
+          color: var(--text-primary);
+        }
+
+        .quote-author {
+          font-size: 0.8rem;
+          color: var(--text-tertiary);
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
         }
 
         .loading-state {
@@ -194,8 +346,8 @@ export default function DashboardPage() {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          min-height: 400px;
-          gap: var(--spacing-lg);
+          min-height: 60vh;
+          gap: var(--spacing-md);
         }
 
         .spinner {
@@ -204,12 +356,16 @@ export default function DashboardPage() {
           border: 3px solid var(--glass-border);
           border-top-color: var(--accent-primary);
           border-radius: 50%;
-          animation: spin 0.8s linear infinite;
+          animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
-          to {
-            transform: rotate(360deg);
+          to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1024px) {
+          .dashboard-layout {
+            grid-template-columns: 1fr;
           }
         }
       `}</style>
