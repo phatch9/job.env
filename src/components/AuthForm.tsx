@@ -35,7 +35,7 @@ export default function AuthForm({ defaultIsSignUp = false }: AuthFormProps) {
         <div className="auth-container">
             <div className="auth-card glass-card">
                 <div className="auth-header">
-                    <h1>Apply.come</h1>
+                    <h1>job.env</h1>
                     <p className="text-secondary">
                         {isSignUp ? 'Create your account' : 'Welcome back'}
                     </p>

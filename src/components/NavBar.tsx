@@ -32,7 +32,7 @@ export default function NavBar() {
                 <div className="navbar-container">
                     <div className="navbar-logo">
                         <Link to="/">
-                            <h1>Apply.come</h1>
+                            <h1>job.env</h1>
                         </Link>
                     </div>
 
