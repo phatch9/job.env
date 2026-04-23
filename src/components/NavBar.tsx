@@ -56,6 +56,12 @@ export default function NavBar() {
                         >
                             Companies
                         </Link>
+                        <Link
+                            to="/documents"
+                            className={`nav-link ${isActive('/documents') ? 'active' : ''}`}
+                        >
+                            Documents
+                        </Link>
                     </div>
 
                     <div className="navbar-actions">
@@ -90,6 +96,7 @@ export default function NavBar() {
                                     <DropdownMenuItem onSelect={() => navigate('/dashboard')}>Dashboard</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => navigate('/applications')}>Applications</DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => navigate('/companies')}>Companies</DropdownMenuItem>
+                                    <DropdownMenuItem onSelect={() => navigate('/documents')}>Documents</DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         </div>
