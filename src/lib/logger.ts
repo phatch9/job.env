@@ -5,7 +5,7 @@ const IS_DEV = import.meta.env.DEV;
 class Logger {
     private prefix: string;
 
-    constructor(prefix: string = 'Apply.come') {
+    constructor(prefix: string = 'job.env') {
         this.prefix = prefix;
     }
 

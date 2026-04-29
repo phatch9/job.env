@@ -48,14 +48,14 @@ export default function DashboardPage() {
           <div className="dashboard-header">
             <div className="welcome-text">
               <h1>Good evening</h1>
-              <p className="text-secondary">Here's what's happening with your job search today.</p>
+              <p className="text-secondary">Updating with your job search today.</p>
             </div>
-            
+
             <form className="quick-search glass" onSubmit={handleSearch}>
               <span className="search-icon">🔍</span>
-              <input 
-                type="text" 
-                placeholder="Quick search applications..." 
+              <input
+                type="text"
+                placeholder="Quick search applications..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -121,9 +121,9 @@ export default function DashboardPage() {
                         <span className="text-xs text-secondary">{app.company?.name}</span>
                       </div>
                       <div className="recent-status">
-                         <span className="badge" style={{ backgroundColor: STATUS_COLORS[app.status], color: 'white' }}>
-                           {STATUS_LABELS[app.status]}
-                         </span>
+                        <span className="badge" style={{ backgroundColor: STATUS_COLORS[app.status], color: 'white' }}>
+                          {STATUS_LABELS[app.status]}
+                        </span>
                       </div>
                     </div>
                   ))
@@ -136,11 +136,11 @@ export default function DashboardPage() {
         {/* Sidebar */}
         <div className="sidebar-col">
           <UpcomingReminders />
-          
+
           <div className="glass-card motivation-card">
-             <div className="quote-icon">"</div>
-             <p className="quote-text">The only way to do great work is to love what you do.</p>
-             <span className="quote-author">— Steve Jobs</span>
+            <div className="quote-icon">"</div>
+            <p className="quote-text">The only way to do great work is to love what you do.</p>
+            <span className="quote-author">— Steve Jobs</span>
           </div>
         </div>
       </div>
