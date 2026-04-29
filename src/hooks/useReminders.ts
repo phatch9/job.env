@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
-import { Reminder, ReminderFormData } from '@/lib/types';
+import { ReminderFormData } from '@/lib/types';
 import { useAuth } from './useAuth.tsx';
 import { remindersApi } from '@/lib/api/reminders';
 import { useEffect } from 'react';

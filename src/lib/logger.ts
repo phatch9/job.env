@@ -16,7 +16,7 @@ class Logger {
         const color = this.getColor(level);
         const logMethod = level === 'debug' ? 'log' : level;
 
-        console[logMethod as any](
+        console[logMethod as 'log' | 'info' | 'warn' | 'error'](
             `%c[${this.prefix}] %c[${level.toUpperCase()}] %c${timestamp}%c\n${message}`,
             `color: ${color}; font-weight: bold;`,
             `color: white; background: ${color}; padding: 2px 5px; border-radius: 3px;`,
